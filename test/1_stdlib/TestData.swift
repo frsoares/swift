@@ -368,7 +368,7 @@ class TestData : TestDataSuper {
         
         let isCapital = { (byte : UInt8) in byte >= 65 && byte <= 90 }
         
-        let allCaps = hello.filter(isCapital)
+        let allCaps = hello.filter(suchThat: isCapital)
         expectEqual(allCaps.count, 2)
         
         let capCount = hello.reduce(0) { isCapital($1) ? $0 + 1 : $0 }

@@ -793,7 +793,7 @@ self.test("\(testNamePrefix).remove(at:)/semantics") {
 //===----------------------------------------------------------------------===//
 
 self.test("\(testNamePrefix).removeFirst()/semantics") {
-  for test in removeFirstTests.filter({ $0.numberToRemove == 1 }) {
+  for test in removeFirstTests.filter(suchThat: { $0.numberToRemove == 1 }) {
     var c = makeWrappedCollection(test.collection.map(OpaqueValue.init))
     let removedElement = c.removeFirst()
     expectEqual(test.collection.first, extractValue(removedElement).value)
@@ -863,7 +863,7 @@ self.test("\(testNamePrefix).removeSubrange()/range/semantics") {
 }
 
 self.test("\(testNamePrefix).replaceSubrange()/closedRange/semantics") {
-  for test in removeRangeTests.filter({ !$0.rangeSelection.isEmpty }) {
+  for test in removeRangeTests.filter(suchThat: { !$0.rangeSelection.isEmpty }) {
     var c = makeWrappedCollection(test.collection)
     let rangeToRemove = test.rangeSelection.closedRange(in: c)
     c.removeSubrange(rangeToRemove)
@@ -1225,7 +1225,7 @@ self.test("\(testNamePrefix).OperatorPlus") {
 //===----------------------------------------------------------------------===//
 
 self.test("\(testNamePrefix).removeLast()/whereIndexIsBidirectional/semantics") {
-  for test in removeLastTests.filter({ $0.numberToRemove == 1 }) {
+  for test in removeLastTests.filter(suchThat: { $0.numberToRemove == 1 }) {
     var c = makeWrappedCollection(test.collection)
     let removedElement = c.removeLast()
     expectEqual(

@@ -113,7 +113,9 @@ RangeReplaceableTestSuite.test("replaceSubrange/countableClosedRange") {
 % for rangeType in withRangeTypes:
 RangeReplaceableTestSuite.test("removeSubrange/${rangeType}") {
 %   if rangeType is "countableClosedRange":
-  for test in removeRangeTests.filter({ !$0.rangeSelection.isEmpty }) {
+  for test in removeRangeTests.filter(
+    suchThat: { !$0.rangeSelection.isEmpty }
+  ) {
 %   else:
   for test in removeRangeTests {
 %   end
