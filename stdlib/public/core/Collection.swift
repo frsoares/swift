@@ -1481,15 +1481,17 @@ extension Collection {
   /// that was originally separated by one or more spaces.
   ///
   ///     let line = "BLANCHE:   I don't want realism. I want magic!"
-  ///     print(line.characters.split(isSeparator: { $0 == " " })
+  ///     print(line.characters.split(separatedWhere: { $0 == " " })
   ///                          .map(String.init))
   ///     // Prints "["BLANCHE:", "I", "don't", "want", "realism.", "I", "want", "magic!"]"
   ///
   /// The second example passes `1` for the `maxSplits` parameter, so the
   /// original string is split just once, into two new strings.
   ///
-  ///     print(line.characters.split(maxSplits: 1, isSeparator: { $0 == " " })
-  ///                           .map(String.init))
+  ///     print(
+  ///         line.characters.split(
+  ///             maxSplits: 1, separatedWhere: { $0 == " " }
+  ///             ).map(String.init))
   ///     // Prints "["BLANCHE:", "  I don\'t want realism. I want magic!"]"
   ///
   /// The final example passes `false` for the `omittingEmptySubsequences`
@@ -1517,7 +1519,7 @@ extension Collection {
   public func split(
     maxSplits: Int = Int.max,
     omittingEmptySubsequences: Bool = true,
-    isSeparator: @noescape (Iterator.Element) throws -> Bool
+    separatedWhere isSeparator: @noescape (Iterator.Element) throws -> Bool
   ) rethrows -> [SubSequence] {
     _precondition(maxSplits >= 0, "Must take zero or more splits")
 
@@ -1613,7 +1615,7 @@ extension Collection where Iterator.Element : Equatable {
   return split(
     maxSplits: maxSplits,
     omittingEmptySubsequences: omittingEmptySubsequences,
-    isSeparator: { $0 == separator })
+    separatedWhere: { $0 == separator })
   }
 }
 
@@ -1712,7 +1714,7 @@ extension Collection {
   public func split(
     _ maxSplit: Int = Int.max,
     allowEmptySlices: Bool = false,
-    isSeparator: @noescape (Iterator.Element) throws -> Bool
+    separatedWhere isSeparator: @noescape (Iterator.Element) throws -> Bool
   ) rethrows -> [SubSequence] {
     Builtin.unreachable()
   }
