@@ -48,7 +48,7 @@ public func withOverriddenLocaleCurrentLocale<Result>(
 
 public func withOverriddenLocaleCurrentLocale<Result>(
   _ temporaryLocaleIdentifier: String,
-  _ body: @noescape () -> Result
+  invoke body: @noescape () -> Result
 ) -> Result {
   precondition(
     Locale.availableLocaleIdentifiers().contains(temporaryLocaleIdentifier),
@@ -65,7 +65,7 @@ public func withOverriddenLocaleCurrentLocale<Result>(
 /// return-autoreleased optimization.)
 @inline(never)
 public func autoreleasepoolIfUnoptimizedReturnAutoreleased(
-  _ body: @noescape () -> Void
+  invoking body: @noescape () -> Void
 ) {
 #if arch(i386) && (os(iOS) || os(watchOS))
   autoreleasepool(body)
