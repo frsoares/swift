@@ -40,8 +40,16 @@
 #include "llvm/ADT/TinyPtrVector.h"
 #include "llvm/ADT/Twine.h"
 #include <algorithm>
+#include "llvm/Support/FileSystem.h"
 
 using namespace swift;
+
+// Util para peger envVar - mscr
+static std::string getEnvVar( std::string const & key )
+{
+    char * val = getenv( key.c_str() );
+    return val == NULL ? std::string("") : std::string(val);
+}
 
 TypeChecker::TypeChecker(ASTContext &Ctx, DiagnosticEngine &Diags)
   : Context(Ctx), Diags(Diags)
@@ -645,6 +653,11 @@ void swift::performTypeChecking(SourceFile &SF, TopLevelContext &TLC,
     SharedTimer timer("AST verification");
     // Verify the SourceFile.
     verify(SF);
+
+    // DUMP! - mscr
+    if (getEnvVar("SWIFT_DUMP") == "") {
+      SF.dump();
+    }
 
     // Verify imported modules.
 #ifndef NDEBUG
