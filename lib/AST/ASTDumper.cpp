@@ -33,6 +33,7 @@
 #include "llvm/Support/Process.h"
 #include "llvm/Support/SaveAndRestore.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/FileSystem.h"
 
 using namespace swift;
 
@@ -571,11 +572,32 @@ namespace {
       PrintWithColorRAII(OS, ParenthesisColor) << '(';
       PrintWithColorRAII(OS, Color) << Name;
 
+      // If we have a source range and an ASTContext, print the source range.
+
+      //MSCR: location
+      if (D->getStartLoc().isValid()) {
+          ASTContext &Ctx = D->getASTContext();
+
+          auto L = D->getLoc();
+          if (L.isValid()) {
+              OS << " location=";
+              L.print(OS, Ctx.SourceMgr);
+          }
+
+          auto R = D->getSourceRange();
+          if (R.isValid()) {
+              OS << " range=";
+              R.print(OS, Ctx.SourceMgr, /*PrintText=*/false);
+          }
+      }
+
       if (D->isImplicit())
         PrintWithColorRAII(OS, DeclModifierColor) << " implicit";
 
       if (D->TrailingSemiLoc.isValid())
         PrintWithColorRAII(OS, DeclModifierColor) << " trailing_semi";
+
+
     }
 
     void printInherited(ArrayRef<TypeLoc> Inherited) {
@@ -755,7 +777,7 @@ namespace {
     void visitSourceFile(const SourceFile &SF) {
       OS.indent(Indent);
       PrintWithColorRAII(OS, ParenthesisColor) << '(';
-      PrintWithColorRAII(OS, ASTNodeColor) << "source_file";
+      PrintWithColorRAII(OS, ASTNodeColor) << "source_file \"" << SF.getFilename() << "\"";
       for (Decl *D : SF.Decls) {
         if (D->isImplicit())
           continue;
@@ -785,38 +807,38 @@ namespace {
     }
 
     void printAccessors(AbstractStorageDecl *D) {
-      if (FuncDecl *Get = D->getGetter()) {
-        OS << "\n";
-        printRec(Get);
-      }
-      if (FuncDecl *Set = D->getSetter()) {
-        OS << "\n";
-        printRec(Set);
-      }
-      if (FuncDecl *MaterializeForSet = D->getMaterializeForSetFunc()) {
-        OS << "\n";
-        printRec(MaterializeForSet);
-      }
-      if (D->hasObservers()) {
-        if (FuncDecl *WillSet = D->getWillSetFunc()) {
-          OS << "\n";
-          printRec(WillSet);
-        }
-        if (FuncDecl *DidSet = D->getDidSetFunc()) {
-          OS << "\n";
-          printRec(DidSet);
-        }
-      }
-      if (D->hasAddressors()) {
-        if (FuncDecl *addressor = D->getAddressor()) {
-          OS << "\n";
-          printRec(addressor);
-        }
-        if (FuncDecl *mutableAddressor = D->getMutableAddressor()) {
-          OS << "\n";
-          printRec(mutableAddressor);
-        }
-      }
+//      if (FuncDecl *Get = D->getGetter()) {
+//        OS << "\n";
+//        printRec(Get);
+//      }
+//      if (FuncDecl *Set = D->getSetter()) {
+//        OS << "\n";
+//        printRec(Set);
+//      }
+//      if (FuncDecl *MaterializeForSet = D->getMaterializeForSetFunc()) {
+//        OS << "\n";
+//        printRec(MaterializeForSet);
+//      }
+//      if (D->hasObservers()) {
+//        if (FuncDecl *WillSet = D->getWillSetFunc()) {
+//          OS << "\n";
+//          printRec(WillSet);
+//        }
+//        if (FuncDecl *DidSet = D->getDidSetFunc()) {
+//          OS << "\n";
+//          printRec(DidSet);
+//        }
+//      }
+//      if (D->hasAddressors()) {
+//        if (FuncDecl *addressor = D->getAddressor()) {
+//          OS << "\n";
+//          printRec(addressor);
+//        }
+//        if (FuncDecl *mutableAddressor = D->getMutableAddressor()) {
+//          OS << "\n";
+//          printRec(mutableAddressor);
+//        }
+//      }
     }
 
     void visitParamDecl(ParamDecl *PD) {
@@ -1038,35 +1060,35 @@ namespace {
     }
 
     void visitIfConfigDecl(IfConfigDecl *ICD) {
-      OS.indent(Indent);
-      PrintWithColorRAII(OS, ParenthesisColor) << '(';
-      OS << "#if_decl\n";
-      Indent += 2;
-      for (auto &Clause : ICD->getClauses()) {
-        if (Clause.Cond) {
-          PrintWithColorRAII(OS, ParenthesisColor) << '(';
-          OS << "#if:";
-          if (Clause.isActive) OS << " active";
-          OS << "\n";
-          printRec(Clause.Cond);
-        } else {
-          OS << '\n';
-          PrintWithColorRAII(OS, ParenthesisColor) << '(';
-          OS << "#else:";
-          if (Clause.isActive) OS << " active";
-          OS << "\n";
-        }
-
-        for (auto D : Clause.Elements) {
-          OS << '\n';
-          printRec(D);
-        }
-
-        PrintWithColorRAII(OS, ParenthesisColor) << ')';
-      }
-
-      Indent -= 2;
-      PrintWithColorRAII(OS, ParenthesisColor) << ')';
+//      OS.indent(Indent);
+//      PrintWithColorRAII(OS, ParenthesisColor) << '(';
+//      OS << "#if_decl\n";
+//      Indent += 2;
+//      for (auto &Clause : ICD->getClauses()) {
+//        if (Clause.Cond) {
+//          PrintWithColorRAII(OS, ParenthesisColor) << '(';
+//          OS << "#if:";
+//          if (Clause.isActive) OS << " active";
+//          OS << "\n";
+//          printRec(Clause.Cond);
+//        } else {
+//          OS << '\n';
+//          PrintWithColorRAII(OS, ParenthesisColor) << '(';
+//          OS << "#else:";
+//          if (Clause.isActive) OS << " active";
+//          OS << "\n";
+//        }
+//
+//        for (auto D : Clause.Elements) {
+//          OS << '\n';
+//          printRec(D);
+//        }
+//
+//        PrintWithColorRAII(OS, ParenthesisColor) << ')';
+//      }
+//
+//      Indent -= 2;
+//      PrintWithColorRAII(OS, ParenthesisColor) << ')';
     }
 
     void visitPrecedenceGroupDecl(PrecedenceGroupDecl *PGD) {
@@ -1264,7 +1286,12 @@ void LLVM_ATTRIBUTE_USED ValueDecl::dumpRef() const {
 }
 
 void SourceFile::dump() const {
-  dump(llvm::errs());
+  std::error_code EC;
+  llvm::raw_fd_ostream outputFile("dumper-output.txt", EC, llvm::sys::fs::OpenFlags::F_Append);
+  dump(outputFile);
+  outputFile << "\n";
+
+//  dump(llvm::errs());
 }
 
 void SourceFile::dump(llvm::raw_ostream &OS) const {
@@ -1423,32 +1450,32 @@ public:
   }
 
   void visitIfConfigStmt(IfConfigStmt *S) {
-    printCommon(S, "#if_stmt");
-    Indent += 2;
-    for (auto &Clause : S->getClauses()) {
-      OS << '\n';
-      OS.indent(Indent);
-      if (Clause.Cond) {
-        PrintWithColorRAII(OS, ParenthesisColor) << '(';
-        PrintWithColorRAII(OS, StmtColor) << "#if:";
-        if (Clause.isActive)
-          PrintWithColorRAII(OS, DeclModifierColor) << " active";
-        OS << '\n';
-        printRec(Clause.Cond);
-      } else {
-        PrintWithColorRAII(OS, StmtColor) << "#else";
-        if (Clause.isActive)
-          PrintWithColorRAII(OS, DeclModifierColor) << " active";
-      }
-
-      OS << '\n';
-      Indent += 2;
-      printASTNodes(Clause.Elements, "elements");
-      Indent -= 2;
-    }
-
-    Indent -= 2;
-    PrintWithColorRAII(OS, ParenthesisColor) << ')';
+//    printCommon(S, "#if_stmt");
+//    Indent += 2;
+//    for (auto &Clause : S->getClauses()) {
+//      OS << '\n';
+//      OS.indent(Indent);
+//      if (Clause.Cond) {
+//        PrintWithColorRAII(OS, ParenthesisColor) << '(';
+//        PrintWithColorRAII(OS, StmtColor) << "#if:";
+//        if (Clause.isActive)
+//          PrintWithColorRAII(OS, DeclModifierColor) << " active";
+//        OS << '\n';
+//        printRec(Clause.Cond);
+//      } else {
+//        PrintWithColorRAII(OS, StmtColor) << "#else";
+//        if (Clause.isActive)
+//          PrintWithColorRAII(OS, DeclModifierColor) << " active";
+//      }
+//
+//      OS << '\n';
+//      Indent += 2;
+//      printASTNodes(Clause.Elements, "elements");
+//      Indent -= 2;
+//    }
+//
+//    Indent -= 2;
+//    PrintWithColorRAII(OS, ParenthesisColor) << ')';
   }
 
   void visitDoStmt(DoStmt *S) {
@@ -2335,6 +2362,23 @@ public:
   }
   void visitIfExpr(IfExpr *E) {
     printCommon(E, "if_expr") << '\n';
+
+    // If we have a source range and an ASTContext, print the source range.
+    if (auto Ty = E->getType()) {
+        auto &Ctx = Ty->getASTContext();
+        auto L = E->getLoc();
+        if (L.isValid()) {
+            OS << " location=";
+            L.print(OS, Ctx.SourceMgr);
+        }
+
+        auto R = E->getSourceRange();
+        if (R.isValid()) {
+            OS << " range=";
+            R.print(OS, Ctx.SourceMgr, /*PrintText=*/false);
+        }
+    }
+
     printRec(E->getCondExpr());
     OS << '\n';
     printRec(E->getThenExpr());
